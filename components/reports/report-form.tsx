@@ -262,7 +262,7 @@ export function ReportForm({
             <span className="mt-1 text-xs text-muted-foreground">
               JPG, PNG, WEBP ไม่เกิน 5 MB ต่อรูป สูงสุด 5 รูป
             </span>
-            <input
+            <Input
               type="file"
               accept="image/jpeg,image/png,image/webp"
               multiple
@@ -285,17 +285,19 @@ export function ReportForm({
                     className="object-cover"
                     unoptimized
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="destructive"
+                    size="icon-sm"
                     aria-label={`ลบภาพที่ ${index + 1}`}
                     onClick={() => {
                       URL.revokeObjectURL(item.url);
                       setFiles(files.filter((_, itemIndex) => itemIndex !== index));
                     }}
-                    className="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-foreground/80 text-background"
+                    className="absolute right-1 top-1 rounded-full"
                   >
                     <IconX className="size-4" />
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>

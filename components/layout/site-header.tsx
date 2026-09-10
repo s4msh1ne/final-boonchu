@@ -7,7 +7,6 @@ import { markNotificationsReadAction } from "@/actions/notifications";
 import { Brand } from "@/components/layout/brand";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { AccountMenu } from "@/components/layout/account-menu";
-import { MenuLink } from "@/components/layout/menu-link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -48,7 +47,7 @@ export async function SiteHeader() {
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="flex items-center justify-between px-3 py-2">
                     <span className="text-sm font-semibold text-foreground">การแจ้งเตือน</span>
-                    {notificationData.unread > 0 && <form action={markNotificationsReadAction}><button className="text-xs text-primary">อ่านทั้งหมด</button></form>}
+                    {notificationData.unread > 0 && <form action={markNotificationsReadAction}><Button type="submit" variant="link" size="xs">อ่านทั้งหมด</Button></form>}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {notificationData.items.length ? notificationData.items.map((item) => (

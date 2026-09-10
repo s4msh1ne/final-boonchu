@@ -31,8 +31,13 @@ export const staffUpdateSchema = z.object({
   reportId: z.string().uuid(),
   status: z.enum(reportStatuses),
   priority: z.enum(reportPriorities),
-  assignedToId: z.union([z.string().min(1), z.literal("")]),
-  message: z.string().trim().max(1000).optional(),
+  assignedToId: z
+    .union([z.string().min(1), z.literal("")])
+    .transform((value) => value === "__unassigned" ? "" : value),
+  message: z.string().trim().max(1000).refine(
+    (value) => !value || value.length >= 5,
+    "ความคืบหน้าต้องมีอย่างน้อย 5 ตัวอักษร",
+  ).optional(),
   rejectionReason: z.string().trim().max(1000).optional(),
 }).superRefine((value, ctx) => {
   if (value.status === "rejected" && (!value.rejectionReason || value.rejectionReason.length < 5)) {

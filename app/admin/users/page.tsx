@@ -5,5 +5,58 @@ import { changeUserRoleAction } from "@/actions/admin";
 import { ROLE_LABELS } from "@/lib/constants";
 import { formatThaiDate } from "@/lib/dates";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export default async function UsersPage({ searchParams }: PageProps<"/admin/users">) { const query = await searchParams; const search = typeof query.search === "string" ? query.search.toLowerCase() : ""; const allUsers = await db.select().from(user).orderBy(asc(user.createdAt)); const users = allUsers.filter((item) => !search || item.name.toLowerCase().includes(search) || item.email.toLowerCase().includes(search)); return <div><h1 className="text-3xl font-bold">ผู้ใช้งาน</h1><p className="mt-2 text-muted-foreground">กำหนดสิทธิ์เจ้าหน้าที่และผู้ดูแลระบบ</p><form className="mt-6 flex max-w-lg gap-2"><input name="search" defaultValue={search} placeholder="ค้นหาชื่อหรืออีเมล" className="h-10 flex-1 rounded-xl border bg-background px-3 text-sm" /><Button type="submit">ค้นหา</Button></form><div className="mt-5 overflow-x-auto rounded-2xl border bg-card"><div className="min-w-[760px]"><div className="grid grid-cols-[1fr_220px_140px_220px] gap-4 border-b bg-muted/50 px-4 py-3 text-xs font-semibold text-muted-foreground"><span>ผู้ใช้งาน</span><span>อีเมล</span><span>สมัครเมื่อ</span><span>บทบาท</span></div><div className="divide-y">{users.map((item) => <div key={item.id} className="grid grid-cols-[1fr_220px_140px_220px] items-center gap-4 px-4 py-3 text-sm"><span><span className="block font-medium">{item.name}</span><span className="text-xs text-muted-foreground">{ROLE_LABELS[item.role]}</span></span><span className="truncate text-muted-foreground">{item.email}</span><span className="text-muted-foreground">{formatThaiDate(item.createdAt)}</span><form action={changeUserRoleAction} className="flex gap-2"><input type="hidden" name="userId" value={item.id} /><select name="role" defaultValue={item.role} className="h-9 flex-1 rounded-xl border bg-background px-2"><option value="resident">สมาชิกชุมชน</option><option value="staff">เจ้าหน้าที่</option><option value="admin">ผู้ดูแลระบบ</option></select><Button type="submit" size="sm">บันทึก</Button></form></div>)}</div></div></div></div>; }
+export default async function UsersPage({ searchParams }: PageProps<"/admin/users">) {
+  const query = await searchParams;
+  const search = typeof query.search === "string" ? query.search.toLowerCase() : "";
+  const allUsers = await db.select().from(user).orderBy(asc(user.createdAt));
+  const users = allUsers.filter((item) =>
+    !search || item.name.toLowerCase().includes(search) || item.email.toLowerCase().includes(search),
+  );
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold">ผู้ใช้งาน</h1>
+      <p className="mt-2 text-muted-foreground">กำหนดสิทธิ์เจ้าหน้าที่และผู้ดูแลระบบ</p>
+      <form className="mt-6 flex max-w-lg gap-2">
+        <Input name="search" defaultValue={search} placeholder="ค้นหาชื่อหรืออีเมล" />
+        <Button type="submit">ค้นหา</Button>
+      </form>
+      <div className="mt-5 rounded-2xl border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <TableHead>ผู้ใช้งาน</TableHead>
+              <TableHead>อีเมล</TableHead>
+              <TableHead>สมัครเมื่อ</TableHead>
+              <TableHead>บทบาท</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell><span className="block font-medium">{item.name}</span><span className="text-xs text-muted-foreground">{ROLE_LABELS[item.role]}</span></TableCell>
+                <TableCell className="text-muted-foreground">{item.email}</TableCell>
+                <TableCell className="text-muted-foreground">{formatThaiDate(item.createdAt)}</TableCell>
+                <TableCell>
+                  <form action={changeUserRoleAction} className="flex min-w-56 gap-2">
+                    <input type="hidden" name="userId" value={item.id} />
+                    <NativeSelect name="role" defaultValue={item.role} className="flex-1">
+                      <NativeSelectOption value="resident">สมาชิกชุมชน</NativeSelectOption>
+                      <NativeSelectOption value="staff">เจ้าหน้าที่</NativeSelectOption>
+                      <NativeSelectOption value="admin">ผู้ดูแลระบบ</NativeSelectOption>
+                    </NativeSelect>
+                    <Button type="submit" size="sm">บันทึก</Button>
+                  </form>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}

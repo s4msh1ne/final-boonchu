@@ -35,9 +35,23 @@ export async function updateReportAction(
     .limit(1);
   if (!existing) return { success: false, error: "ไม่พบรายงาน" };
 
+  const statusChanged = existing.status !== parsed.data.status;
+  if (
+    statusChanged &&
+    ["in_progress", "resolved", "closed"].includes(parsed.data.status) &&
+    !parsed.data.message
+  ) {
+    return {
+      success: false,
+      error: "กรุณาระบุผลการดำเนินงาน",
+      fieldErrors: {
+        message: ["กรุณาระบุความคืบหน้าหรือผลการดำเนินงานอย่างน้อย 5 ตัวอักษร"],
+      },
+    };
+  }
+
   try {
     const assignedToId = parsed.data.assignedToId || null;
-    const statusChanged = existing.status !== parsed.data.status;
     const assignmentChanged = existing.assignedToId !== assignedToId;
     const now = new Date();
     await db
@@ -105,6 +119,8 @@ export async function updateReportAction(
     revalidatePath("/staff/reports");
     revalidatePath(`/staff/reports/${existing.id}`);
     revalidatePath(`/reports/${existing.id}`);
+    revalidatePath(`/dashboard/reports`);
+    revalidatePath("/dashboard");
     return { success: true, data: undefined };
   } catch (error) {
     console.error("updateReportAction", error);

@@ -126,20 +126,31 @@ export async function getReportDetail(id: string) {
   });
 }
 
-export async function getDashboardMetrics(reporterId?: string) {
-  const own = reporterId ? eq(reports.reporterId, reporterId) : undefined;
+export async function getDashboardMetrics(
+  reporterId?: string,
+  options: { publicOnly?: boolean } = {},
+) {
+  const conditions: SQL[] = [];
+  if (reporterId) conditions.push(eq(reports.reporterId, reporterId));
+  if (options.publicOnly) conditions.push(eq(reports.isPublic, true));
+  const where = conditions.length ? and(...conditions) : undefined;
   const [row] = await db
     .select({
       total: count(),
       pending: sql<number>`count(*) filter (where ${reports.status} = 'pending')::int`,
+      acknowledged: sql<number>`count(*) filter (where ${reports.status} = 'acknowledged')::int`,
+      working: sql<number>`count(*) filter (where ${reports.status} = 'in_progress')::int`,
       inProgress: sql<number>`count(*) filter (where ${reports.status} in ('acknowledged', 'in_progress'))::int`,
       resolved: sql<number>`count(*) filter (where ${reports.status} in ('resolved', 'closed'))::int`,
+      rejected: sql<number>`count(*) filter (where ${reports.status} = 'rejected')::int`,
       urgent: sql<number>`count(*) filter (where ${reports.priority} = 'urgent')::int`,
+      unassigned: sql<number>`count(*) filter (where ${reports.assignedToId} is null and ${reports.status} not in ('resolved', 'closed', 'rejected'))::int`,
       resolvedToday: sql<number>`count(*) filter (where ${reports.resolvedAt}::date = current_date)::int`,
+      averageAcknowledgementHours: sql<number | null>`avg(extract(epoch from (${reports.acknowledgedAt} - ${reports.createdAt})) / 3600) filter (where ${reports.acknowledgedAt} is not null)::float`,
       averageHours: sql<number | null>`avg(extract(epoch from (${reports.resolvedAt} - ${reports.createdAt})) / 3600) filter (where ${reports.resolvedAt} is not null)::float`,
     })
     .from(reports)
-    .where(own);
+    .where(where);
   return row;
 }
 

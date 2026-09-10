@@ -14,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MenuLink } from "@/components/layout/menu-link";
 import type { UserRole } from "@/db/schema";
 import Link from "next/link";
 
