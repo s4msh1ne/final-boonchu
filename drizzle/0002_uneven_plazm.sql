@@ -1,0 +1,1 @@
+ALTER TABLE "system_settings" ALTER COLUMN "community_name" SET DEFAULT 'เทศบาลเมืองสุพรรณบุรี';

@@ -1,0 +1,5 @@
+import { requireUser } from "@/lib/permissions";
+import { ROLE_LABELS } from "@/lib/constants";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default async function ProfilePage() { const currentUser = await requireUser(); return <div><h1 className="text-3xl font-bold">บัญชีของฉัน</h1><p className="mt-2 text-muted-foreground">ข้อมูลบัญชีที่ใช้ในระบบ</p><Card className="mt-6 max-w-xl"><CardHeader><CardTitle>ข้อมูลส่วนตัว</CardTitle></CardHeader><CardContent className="grid gap-5 sm:grid-cols-2"><div><p className="text-xs text-muted-foreground">ชื่อ</p><p className="mt-1 font-medium">{currentUser.name}</p></div><div><p className="text-xs text-muted-foreground">บทบาท</p><p className="mt-1 font-medium">{ROLE_LABELS[currentUser.role]}</p></div><div><p className="text-xs text-muted-foreground">อีเมล</p><p className="mt-1 font-medium">{currentUser.email}</p></div><div><p className="text-xs text-muted-foreground">เบอร์โทรศัพท์</p><p className="mt-1 font-medium">{currentUser.phoneNumber || "ไม่ได้ระบุ"}</p></div></CardContent></Card></div>; }

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788749211348,
+      "tag": "0000_luxuriant_firedrake",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788753033103,
+      "tag": "0001_sticky_tiger_shark",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788755358706,
+      "tag": "0002_uneven_plazm",
+      "breakpoints": true
+    }
+  ]
+}
