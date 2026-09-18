@@ -91,8 +91,9 @@ export function ReportForm({
   });
 
   const submit = handleSubmit((_values, event) => {
-    const form = event?.currentTarget as HTMLFormElement | undefined;
+    const form = event?.target as HTMLFormElement | undefined;
     if (!form) return;
+    setError("");
     const formData = new FormData(form);
     formData.delete("images");
     files.forEach(({ file }) => formData.append("images", file));
